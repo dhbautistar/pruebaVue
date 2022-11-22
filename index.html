@@ -125,15 +125,15 @@
                   </v-col>
                   <v-col cols="12" md="8">
                     <v-label>Codigo</v-label>
-                    <v-text-field v-model="producto.codigo" label="Codigo" solo required></v-text-field>
+                    <v-text-field v-model="producto.codigo" type="number" label="Codigo" solo required></v-text-field>
                   </v-col>
                   <v-col cols="12" md="8">
                     <v-label>Exitencia</v-label>
-                    <v-text-field v-model="producto.existencia" label="Exitencia"  solo required></v-text-field>
+                    <v-text-field v-model="producto.existencia" type="number" label="Exitencia"  solo required></v-text-field>
                   </v-col>
                   <v-col cols="12" md="8">
-                    <v-label>Bodega</v-label>
-                    <select v-model="bodega">
+                    <v-label>Seleccione Bodega: </v-label>
+                    <select style="border-bottom: thick double #32a1ce; border-radius: 20px;" v-model="bodega">
                       <option v-for="bodega in bodegas" :value="bodega.id" :selected="producto.id_bodega == bodega.id">{{bodega.nombre}}</option>
                     </select>
                   </v-col>
@@ -142,15 +142,14 @@
                     <v-text-field v-model="producto.descripcion" label="Descripción" solo required></v-text-field>
                   </v-col>
                   <v-col cols="12" md="8">
-                    <select v-model="producto.estado">
+                    <v-label>seleccione Estado: </v-label>
+                    <select style="border-bottom: thick double #32a1ce; border-radius: 20px;" v-model="producto.estado">
                       <option value="1">Activo</option>
                       <option value="2">Inactivo</option>
                       <option value="3">Pendiente</option>
                     </select>
-                  </v-col>
-                    <!-- <v-select v-model="value" :items="items" label="Seleccione un elemento" dense  outlined ></v-select> -->
-                    
-                  
+                  </v-col>    
+            
                 </v-row>
               </v-container>            
           </v-card-text>
@@ -244,6 +243,7 @@
                 this.mostrar();
               }
             },
+   
 
             crear:function(){
                 let parametros = {nombre:this.producto.nombre, codigo:this.producto.codigo, existencia:this.producto.existencia, id_bodega:this.bodega, descripcion:this.producto.descripcion, estado:this.producto.estado };                
@@ -254,7 +254,7 @@
                 this.producto.nombre="";
                 this.producto.codigo="";
                 this.producto.existencia="";
-                this.producto.id_bodega="";
+                this.bodega="";
                 this.producto.descripcion="";
                 this.producto.estado="";
             },                        
