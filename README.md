@@ -12,7 +12,7 @@ crear base de datos con el nombre: "prueba"
 
 php artisan migrate
 
-php artisan db:seed --class=BodegaSeeder
+Agregar datos en la tabla bodegas directamente en la base de datos
 
 php artisan serve
 
