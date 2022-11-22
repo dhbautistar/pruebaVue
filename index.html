@@ -247,11 +247,11 @@
    
 
             crear:function(){
-                let parametros = {nombre:this.producto.nombre, codigo:this.producto.codigo, existencia:this.producto.existencia, id_bodega:this.producto.id_bodega, descripcion:this.producto.descripcion, estado:this.producto.estado };                
+                let parametros = {nombre:this.producto.nombre, codigo:this.producto.codigo, existencia:this.producto.existencia, id_bodega:this.bodega, descripcion:this.producto.descripcion, estado:this.producto.estado };                
                 axios.post(url, parametros)
                 .then(response =>{
                   this.mostrar();
-                });     tecla
+                });
                 this.producto.nombre="";
                 this.producto.codigo="";
                 this.producto.existencia="";
