@@ -20,3 +20,5 @@ Para ver el frontend se debe abrir el archivo index.html que se encuentra en la 
 
 Consulta relacional solicitada:
 (SELECT bodegas.nombre , productos.* from productos INNER JOIN bodegas on productos.id_bodega = bodegas.id)
+
+Para ver la cantidad de productos que exiten en cada bodega se requiere recargar la pagina
