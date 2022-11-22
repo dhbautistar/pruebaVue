@@ -2,7 +2,7 @@
 
 ## Abrir una terminal y ejecutar los siguientes comandos:
 
-git clone https://github.com/dhbautistar/prueba_contingencias.git
+git clone https://github.com/dhbautistar/pruebaVue.git
 
 cd  prueba
 
