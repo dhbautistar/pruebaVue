@@ -14,6 +14,8 @@ php artisan migrate
 
 Agregar datos en la tabla bodegas directamente en la base de datos
 
+Tambien podria agregar datos pre-definidos en la tabla bodegas por consola con php artisan db:seed --class=BodegaSeeder
+
 php artisan serve
 
 Para ver el frontend se debe abrir el archivo index.html que se encuentra en la raiz
