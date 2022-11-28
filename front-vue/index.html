@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.min.css">
+  <style>
+    #app {
+      background-color: #CFD8DC;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <!-- Botón CREAR -->
+        <v-card class="mx-auto mt-5" color="transparent" max-width="1280" elevation="0">
+          <div class="d-flex mb-6" color="grey lighten-2" flat tile>
+            <h2 class="pa-2 mr-auto">Gestión de productos</h2>
+            <v-btn rounded color="#1DE9B6" dark @click.prevent="formNuevo()">Crear producto</v-btn>
+          </div>
+          <!-- filtros -->
+          <v-form class="d-inline-flex">
+            <v-col cols="3">
+              <h4>Nombre del producto</h4>
+            </v-col>
+            <v-col cols="5">
+              <v-text-field class="rounded-lg" v-model="buscador"></v-text-field>
+            </v-col>
+            <v-col cols="3">
+              <v-btn @click.prevent="filtrar(buscador)" type="submit" color="primary accent-3">Buscar</v-btn>
+            </v-col>
+            <v-col cols="6">
+              <input type="radio" value="todo" v-model="filtro">
+              <label>Mostrar todos</label>
+              <input type="radio" value="1" v-model="filtro">
+              <label>Activos</label>
+              <input type="radio" value="2" v-model="filtro">
+              <label>Inactivos</label>
+              <input type="radio" value="3" v-model="filtro">
+              <label>Pendientes</label>
+            </v-col>
+          </v-form>
+          <!-- Tabla y formulario -->
+          <v-simple-table class="mt-5">
+            <template v-slot:default>
+              <thead>
+                <tr class="primary">
+                  <th class="white--text">Nombre del producto</th>
+                  <th class="white--text">Codigo</th>
+                  <th class="white--text">Exitencia</th>
+                  <th class="white--text">Bodega</th>
+                  <th class="white--text">Descripción</th>
+                  <th class="white--text">Editar</th>
+                  <th class="white--text">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="producto in filter" :key="producto.id">
+                  <td>
+                    <v-icon color="#1DE9B6" dark right>mdi-checkbox-marked-circle</v-icon>
+                    </v-btn>{{ producto.nombre }}
+                  </td>
+                  <td>{{ producto.codigo }}</td>
+                  <td>{{ producto.existencia }}</td>
+                  <td>
+                    <div v-for="bodega in bodegas">
+                      <p v-if="bodega.id == producto.id_bodega">{{bodega.nombre}}</p>
+                    </div>
+                  </td>
+                  <td>{{ producto.descripcion }}</td>
+                  <td>
+                    <v-btn small fab
+                      @click="formEditar(producto.id, producto.nombre, producto.codigo, producto.existencia, producto.id_bodega, producto.descripcion, producto.estado)">
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                  </td>
+                  <div>
+                    <td v-if="(producto.estado == 1)">
+                      <v-btn small color="#76FF03" dark>Activo</v-btn>
+                    </td>
+                    <td v-if="(producto.estado == 2)">
+                      <v-btn small color="#D50000" dark>Inactivo</v-btn>
+                    </td>
+                    <td v-if="(producto.estado == 3)">
+                      <v-btn small color="#FFC107" dark>Pendiente</v-btn>
+                    </td>
+                  </div>
+                </tr>
+              </tbody>
+            </template>
+          </v-simple-table>
+          <!-- Estadísticas de productos en bodega -->
+          <h3 class="orange--text">Estadísticas generales</h3>
+          <hr size="5px" width="20%" color="orange" />
+          <div color="#E53935" v-for="count in conteo" :key="producto.id">
+            <p>{{count.count}} Productos en la bodega {{count.bodega}}</p>
+          </div>
+        </v-card>
+        <!-- Componente de Diálogo para CREAR y EDITAR -->
+        <v-dialog v-model="dialog" max-width="600">
+          <v-card>
+            <v-card-title class="primary darken-4 white--text">producto</v-card-title>
+            <v-card-text>
+              <v-form>
+                <p v-if="errors.length">
+                  <b>por favor, valide los campos:</b>
+                <ul>
+                  <li class="red--text" v-for="error in errors">{{ error }}</li>
+                </ul>
+                </p>
+                <v-container>
+                  <v-row>
+                    <input v-model="producto.id" hidden></input>
+                    <v-col cols="12" md="8">
+                      <v-label>Nombre del producto</v-label>
+                      <v-text-field v-model="producto.nombre"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="8" v-if="operacion != 'editar'">
+                      <v-label>Codigo</v-label>
+                      <v-text-field v-model="producto.codigo" type="number"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="8">
+                      <v-label>Exitencia</v-label>
+                      <v-text-field v-model="producto.existencia" type="number"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="8" v-if="operacion != 'editar'">
+                      <v-label>Seleccione Bodega: </v-label>
+                      <select style="border-bottom: thick double #32a1ce; border-radius: 20px;" v-model="bodega">
+                        <option v-for="bodega in bodegas" :value="bodega.id"
+                          :selected="producto.id_bodega == bodega.id">{{bodega.nombre}}</option>
+                      </select>
+                    </v-col>
+                    <v-col cols="12" md="8">
+                      <v-label>Descripción</v-label>
+                      <v-text-field v-model="producto.descripcion" label="Descripción"></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="8">
+                      <v-label>seleccione Estado: </v-label>
+                      <select style="border-bottom: thick double #32a1ce; border-radius: 20px;"
+                        v-model="producto.estado">
+                        <option value="1">Activo</option>
+                        <option value="2">Inactivo</option>
+                        <option value="3">Pendiente</option>
+                      </select>
+                    </v-col>
+
+                  </v-row>
+                </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-col class="d-flex" cols="12" sm="8">
+                <v-btn @click="dialog=false" color="blue-grey" dark>Cancelar</v-btn>
+                <v-btn @click="guardar()" type="submit" color="primary accent-3" dark>Guardar</v-btn>
+              </v-col>
+            </v-card-actions>
+            </v-form>
+
+          </v-card>
+        </v-dialog>
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.js"
+    integrity="sha512-nqIFZC8560+CqHgXKez61MI0f9XSTKLkm0zFVm/99Wt0jSTZ7yeeYwbzyl0SGn/s8Mulbdw+ScCG41hmO2+FKw=="
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.0.2/dist/sweetalert2.all.min.js"></script>
+  <script src="vue.js"></script>
+</body>
+
+</html>
